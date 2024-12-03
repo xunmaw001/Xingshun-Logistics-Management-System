@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.HuoyunDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.kehu_id as kehuId
+        ,a.yuangong_id as yuangongId
+        ,a.jiashiyuan_id as jiashiyuanId
+        ,a.cheliang_id as cheliangId
+        ,a.huoyun_uuid_number as huoyunUuidNumber
+        ,a.huoyun_name as huoyunName
+        ,a.wupin_types as wupinTypes
+        ,a.huoyun_types as huoyunTypes
+        ,a.huoyun_zhongliang as huoyunZhongliang
+        ,a.huoyun_chang as huoyunChang
+        ,a.huoyun_kuan as huoyunKuan
+        ,a.huoyun_gao as huoyunGao
+        ,a.huoyun_jine as huoyunJine
+        ,a.huoyun_chufadi as huoyunChufadi
+        ,a.chufa_time as chufaTime
+        ,a.huoyun_tujing as huoyunTujing
+        ,a.huoyun_didadi as huoyunDidadi
+        ,a.songda_time as songdaTime
+        ,a.wupin_content as wupinContent
+        ,a.huoyun_content as huoyunContent
+        ,a.yushu_types as yushuTypes
+        ,a.huoyun_pingjia_content as huoyunPingjiaContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.HuoyunView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,cheliang.cheliang_name as cheliangName
+        ,cheliang.cheliang_uuid_number as cheliangUuidNumber
+        ,cheliang.cheliang_photo as cheliangPhoto
+        ,cheliang.cheliang_yanse as cheliangYanse
+        ,cheliang.cheliang_chepaihao as cheliangChepaihao
+        ,cheliang.cheliang_types as cheliangTypes
+        ,cheliang.cheliang_content as cheliangContent
+        ,jiashiyuan.jiashiyuan_name as jiashiyuanName
+        ,jiashiyuan.jiashiyuan_phone as jiashiyuanPhone
+        ,jiashiyuan.jiashiyuan_id_number as jiashiyuanIdNumber
+        ,jiashiyuan.jiashiyuan_photo as jiashiyuanPhoto
+        ,jiashiyuan.jiashiyuan_jiazhao_photo as jiashiyuanJiazhaoPhoto
+        ,jiashiyuan.jiashiyuan_jialing as jiashiyuanJialing
+        ,jiashiyuan.sex_types as sexTypes
+        ,jiashiyuan.jiashiyuan_email as jiashiyuanEmail
+        ,jiashiyuan.jiashiyuan_content as jiashiyuanContent
+        ,kehu.kehu_name as kehuName
+        ,kehu.kehu_phone as kehuPhone
+        ,kehu.kehu_id_number as kehuIdNumber
+        ,kehu.kehu_photo as kehuPhoto
+        ,kehu.kehu_email as kehuEmail
+        ,kehu.new_money as newMoney
+        ,yuangong.yuangong_name as yuangongName
+        ,yuangong.yuangong_phone as yuangongPhone
+        ,yuangong.yuangong_id_number as yuangongIdNumber
+        ,yuangong.yuangong_photo as yuangongPhoto
+        ,yuangong.yuangong_email as yuangongEmail
+
+        FROM huoyun  a
+        left JOIN cheliang cheliang ON a.cheliang_id = cheliang.id
+        left JOIN jiashiyuan jiashiyuan ON a.jiashiyuan_id = jiashiyuan.id
+        left JOIN kehu kehu ON a.kehu_id = kehu.id
+        left JOIN yuangong yuangong ON a.yuangong_id = yuangong.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.kehuId != null and params.kehuId != ''">
+                and (
+                    a.kehu_id = #{params.kehuId}
+                )
+            </if>
+            <if test="params.yuangongId != null and params.yuangongId != ''">
+                and (
+                    a.yuangong_id = #{params.yuangongId}
+                )
+            </if>
+            <if test="params.jiashiyuanId != null and params.jiashiyuanId != ''">
+                and (
+                    a.jiashiyuan_id = #{params.jiashiyuanId}
+                )
+            </if>
+            <if test="params.cheliangId != null and params.cheliangId != ''">
+                and (
+                    a.cheliang_id = #{params.cheliangId}
+                )
+            </if>
+            <if test=" params.huoyunUuidNumber != '' and params.huoyunUuidNumber != null and params.huoyunUuidNumber != 'null' ">
+                and a.huoyun_uuid_number like CONCAT('%',#{params.huoyunUuidNumber},'%')
+            </if>
+            <if test=" params.huoyunName != '' and params.huoyunName != null and params.huoyunName != 'null' ">
+                and a.huoyun_name like CONCAT('%',#{params.huoyunName},'%')
+            </if>
+            <if test="params.wupinTypes != null and params.wupinTypes != ''">
+                and a.wupin_types = #{params.wupinTypes}
+            </if>
+            <if test="params.huoyunTypes != null and params.huoyunTypes != ''">
+                and a.huoyun_types = #{params.huoyunTypes}
+            </if>
+            <if test="params.huoyunZhongliangStart != null ">
+                <![CDATA[  and a.huoyun_zhongliang >= #{params.huoyunZhongliangStart}   ]]>
+            </if>
+            <if test="params.huoyunZhongliangEnd != null ">
+                <![CDATA[  and a.huoyun_zhongliang <= #{params.huoyunZhongliangEnd}   ]]>
+            </if>
+            <if test="params.huoyunChangStart != null ">
+                <![CDATA[  and a.huoyun_chang >= #{params.huoyunChangStart}   ]]>
+            </if>
+            <if test="params.huoyunChangEnd != null ">
+                <![CDATA[  and a.huoyun_chang <= #{params.huoyunChangEnd}   ]]>
+            </if>
+            <if test="params.huoyunKuanStart != null ">
+                <![CDATA[  and a.huoyun_kuan >= #{params.huoyunKuanStart}   ]]>
+            </if>
+            <if test="params.huoyunKuanEnd != null ">
+                <![CDATA[  and a.huoyun_kuan <= #{params.huoyunKuanEnd}   ]]>
+            </if>
+            <if test="params.huoyunGaoStart != null ">
+                <![CDATA[  and a.huoyun_gao >= #{params.huoyunGaoStart}   ]]>
+            </if>
+            <if test="params.huoyunGaoEnd != null ">
+                <![CDATA[  and a.huoyun_gao <= #{params.huoyunGaoEnd}   ]]>
+            </if>
+            <if test="params.huoyunJineStart != null ">
+                <![CDATA[  and a.huoyun_jine >= #{params.huoyunJineStart}   ]]>
+            </if>
+            <if test="params.huoyunJineEnd != null ">
+                <![CDATA[  and a.huoyun_jine <= #{params.huoyunJineEnd}   ]]>
+            </if>
+            <if test=" params.huoyunChufadi != '' and params.huoyunChufadi != null and params.huoyunChufadi != 'null' ">
+                and a.huoyun_chufadi like CONCAT('%',#{params.huoyunChufadi},'%')
+            </if>
+            <if test=" params.chufaTimeStart != '' and params.chufaTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.chufa_time) >= UNIX_TIMESTAMP(#{params.chufaTimeStart}) ]]>
+            </if>
+            <if test=" params.chufaTimeEnd != '' and params.chufaTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.chufa_time) <= UNIX_TIMESTAMP(#{params.chufaTimeEnd}) ]]>
+            </if>
+            <if test=" params.huoyunTujing != '' and params.huoyunTujing != null and params.huoyunTujing != 'null' ">
+                and a.huoyun_tujing like CONCAT('%',#{params.huoyunTujing},'%')
+            </if>
+            <if test=" params.huoyunDidadi != '' and params.huoyunDidadi != null and params.huoyunDidadi != 'null' ">
+                and a.huoyun_didadi like CONCAT('%',#{params.huoyunDidadi},'%')
+            </if>
+            <if test=" params.songdaTimeStart != '' and params.songdaTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.songda_time) >= UNIX_TIMESTAMP(#{params.songdaTimeStart}) ]]>
+            </if>
+            <if test=" params.songdaTimeEnd != '' and params.songdaTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.songda_time) <= UNIX_TIMESTAMP(#{params.songdaTimeEnd}) ]]>
+            </if>
+            <if test=" params.wupinContent != '' and params.wupinContent != null and params.wupinContent != 'null' ">
+                and a.wupin_content like CONCAT('%',#{params.wupinContent},'%')
+            </if>
+            <if test=" params.huoyunContent != '' and params.huoyunContent != null and params.huoyunContent != 'null' ">
+                and a.huoyun_content like CONCAT('%',#{params.huoyunContent},'%')
+            </if>
+            <if test="params.yushuTypes != null and params.yushuTypes != ''">
+                and a.yushu_types = #{params.yushuTypes}
+            </if>
+            <if test=" params.huoyunPingjiaContent != '' and params.huoyunPingjiaContent != null and params.huoyunPingjiaContent != 'null' ">
+                and a.huoyun_pingjia_content like CONCAT('%',#{params.huoyunPingjiaContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断车辆的id不为空 -->
+            <if test=" params.cheliangIdNotNull != '' and params.cheliangIdNotNull != null and params.cheliangIdNotNull != 'null' ">
+                and a.cheliang_id IS NOT NULL
+            </if>
+            <if test=" params.cheliangName != '' and params.cheliangName != null and params.cheliangName != 'null' ">
+                and cheliang.cheliang_name like CONCAT('%',#{params.cheliangName},'%')
+            </if>
+            <if test=" params.cheliangUuidNumber != '' and params.cheliangUuidNumber != null and params.cheliangUuidNumber != 'null' ">
+                and cheliang.cheliang_uuid_number like CONCAT('%',#{params.cheliangUuidNumber},'%')
+            </if>
+            <if test=" params.cheliangYanse != '' and params.cheliangYanse != null and params.cheliangYanse != 'null' ">
+                and cheliang.cheliang_yanse like CONCAT('%',#{params.cheliangYanse},'%')
+            </if>
+            <if test=" params.cheliangChepaihao != '' and params.cheliangChepaihao != null and params.cheliangChepaihao != 'null' ">
+                and cheliang.cheliang_chepaihao like CONCAT('%',#{params.cheliangChepaihao},'%')
+            </if>
+            <if test="params.cheliangTypes != null  and params.cheliangTypes != ''">
+                and cheliang.cheliang_types = #{params.cheliangTypes}
+            </if>
+
+            <if test=" params.cheliangContent != '' and params.cheliangContent != null and params.cheliangContent != 'null' ">
+                and cheliang.cheliang_content like CONCAT('%',#{params.cheliangContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(cheliang.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(cheliang.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+                <!-- 判断驾驶员的id不为空 -->
+            <if test=" params.jiashiyuanIdNotNull != '' and params.jiashiyuanIdNotNull != null and params.jiashiyuanIdNotNull != 'null' ">
+                and a.jiashiyuan_id IS NOT NULL
+            </if>
+            <if test=" params.jiashiyuanName != '' and params.jiashiyuanName != null and params.jiashiyuanName != 'null' ">
+                and jiashiyuan.jiashiyuan_name like CONCAT('%',#{params.jiashiyuanName},'%')
+            </if>
+            <if test=" params.jiashiyuanPhone != '' and params.jiashiyuanPhone != null and params.jiashiyuanPhone != 'null' ">
+                and jiashiyuan.jiashiyuan_phone like CONCAT('%',#{params.jiashiyuanPhone},'%')
+            </if>
+            <if test=" params.jiashiyuanIdNumber != '' and params.jiashiyuanIdNumber != null and params.jiashiyuanIdNumber != 'null' ">
+                and jiashiyuan.jiashiyuan_id_number like CONCAT('%',#{params.jiashiyuanIdNumber},'%')
+            </if>
+            <if test=" params.jiashiyuanJialing != '' and params.jiashiyuanJialing != null and params.jiashiyuanJialing != 'null' ">
+                and jiashiyuan.jiashiyuan_jialing like CONCAT('%',#{params.jiashiyuanJialing},'%')
+            </if>
+            <if test="params.sexTypes != null  and params.sexTypes != ''">
+                and jiashiyuan.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.jiashiyuanEmail != '' and params.jiashiyuanEmail != null and params.jiashiyuanEmail != 'null' ">
+                and jiashiyuan.jiashiyuan_email like CONCAT('%',#{params.jiashiyuanEmail},'%')
+            </if>
+            <if test=" params.jiashiyuanContent != '' and params.jiashiyuanContent != null and params.jiashiyuanContent != 'null' ">
+                and jiashiyuan.jiashiyuan_content like CONCAT('%',#{params.jiashiyuanContent},'%')
+            </if>
+                <!-- 判断客户的id不为空 -->
+            <if test=" params.kehuIdNotNull != '' and params.kehuIdNotNull != null and params.kehuIdNotNull != 'null' ">
+                and a.kehu_id IS NOT NULL
+            </if>
+            <if test=" params.kehuName != '' and params.kehuName != null and params.kehuName != 'null' ">
+                and kehu.kehu_name like CONCAT('%',#{params.kehuName},'%')
+            </if>
+            <if test=" params.kehuPhone != '' and params.kehuPhone != null and params.kehuPhone != 'null' ">
+                and kehu.kehu_phone like CONCAT('%',#{params.kehuPhone},'%')
+            </if>
+            <if test=" params.kehuIdNumber != '' and params.kehuIdNumber != null and params.kehuIdNumber != 'null' ">
+                and kehu.kehu_id_number like CONCAT('%',#{params.kehuIdNumber},'%')
+            </if>
+            <if test=" params.kehuEmail != '' and params.kehuEmail != null and params.kehuEmail != 'null' ">
+                and kehu.kehu_email like CONCAT('%',#{params.kehuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and kehu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and kehu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+                <!-- 判断员工的id不为空 -->
+            <if test=" params.yuangongIdNotNull != '' and params.yuangongIdNotNull != null and params.yuangongIdNotNull != 'null' ">
+                and a.yuangong_id IS NOT NULL
+            </if>
+            <if test=" params.yuangongName != '' and params.yuangongName != null and params.yuangongName != 'null' ">
+                and yuangong.yuangong_name like CONCAT('%',#{params.yuangongName},'%')
+            </if>
+            <if test=" params.yuangongPhone != '' and params.yuangongPhone != null and params.yuangongPhone != 'null' ">
+                and yuangong.yuangong_phone like CONCAT('%',#{params.yuangongPhone},'%')
+            </if>
+            <if test=" params.yuangongIdNumber != '' and params.yuangongIdNumber != null and params.yuangongIdNumber != 'null' ">
+                and yuangong.yuangong_id_number like CONCAT('%',#{params.yuangongIdNumber},'%')
+            </if>
+            <if test=" params.yuangongEmail != '' and params.yuangongEmail != null and params.yuangongEmail != 'null' ">
+                and yuangong.yuangong_email like CONCAT('%',#{params.yuangongEmail},'%')
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
